@@ -1,0 +1,16 @@
+newmtl material_0
+Ka 0.40000000 0.40000000 0.40000000
+Kd 0.10000000 0.10000000 0.10000000
+Ks 0.40000000 0.40000000 0.40000000
+Ns 1.00000000
+map_Kd Bricks17_col.jpg
+map_Ns Bricks17_rgh.jpg
+map_Bump Bricks17_nrm.jpg
+newmtl material_1
+Ka 0.40000000 0.40000000 0.40000000
+Kd 0.10000000 0.10000000 0.10000000
+Ks 0.40000000 0.40000000 0.40000000
+Ns 1.00000000
+map_Kd Concrete12_col.jpg
+map_Ns Concrete12_rgh.jpg
+map_Bump Concrete12_nrm.jpg

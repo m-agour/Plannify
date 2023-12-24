@@ -6,7 +6,7 @@ from shapely import Polygon, box, MultiPolygon, GeometryCollection
 from shapely.affinity import translate, scale
 from shapely.geometry import Point
 from PIL import ImageFont, Image, ImageDraw
-from processing.geometry import get_mask
+from processing.geometry import get_mask, get_door_rect
 from processing.polygon import extrude_and_save_multipolygon, \
     convert_obj_to_gltf
 
@@ -30,16 +30,6 @@ def imfy(img):
     """Convert image to uint8 format"""
     im = (np.clip(img, 0, 1) * 255).astype(np.uint8)
     return im
-
-
-def get_door_rect(door_point, inner, scale=1):
-    width = inner.area ** 0.5 * 0.04 * scale
-    door = inner.exterior.intersection(
-        door_point.buffer(width, join_style=2)).buffer(width / 2,
-                                                       join_style=2).bounds
-    door_box = box(*door)
-    door = door_box - door_box.intersection(inner)
-    return door
 
 
 def increase_brightness(img, value=30):
@@ -167,7 +157,8 @@ def draw_display_picture(mask, door, bedrooms, bathrooms, kitchen, living,
 
     final = cv2.cvtColor(final.astype(np.uint8), cv2.COLOR_BGR2RGB)
     final[np.where((door != [0, 0, 0]).all(axis=2))] = [153, 102, 255]
-    # final[np.where((living != [0, 0, 0]).all(axis=2))] = livtex[np.where((living != [0, 0, 0]).all(axis=2))]
+    # final[np.where((living != [0, 0, 0]).all(axis=2))] = livtex[
+    # np.where((living != [0, 0, 0]).all(axis=2))]
     final[np.where((bathrooms != [0, 0, 0]).all(axis=2))] = batex[
         np.where((bathrooms != [0, 0, 0]).all(axis=2))]
     final[np.where((kitchen != [0, 0, 0]).all(axis=2))] = kitex[
@@ -187,12 +178,12 @@ def to_disp_mask(in_poly):
     return get_mask(p, [4 * 256] * 2)
 
 
-def post_processing(data):
+def pre_process_web_data(data):
     inner = data.get('mask', [])
     door = data.get('door_pos', [])
     area = data.get('area', 0)
 
-    poly = Polygon(inner)
+    poly = Polygon(inner).buffer(0)
     door = Point(door)
     door = get_door_rect(door, poly)
 
@@ -217,21 +208,18 @@ def post_processing(data):
     door_channel = scaled_ai_door.buffer(3).intersection(
         scaled_ai_poly).centroid
 
+    return {"mask": scaled_ai_poly, "door_pos": scaled_ai_door, "area": area}
 
-def generate_textured_image(data, area=140):
+
+def generate_textured_image(data, output_name, area=140):
     walls = data['wall']
     inner_poly = data['inner']
-    door_poly = data['door']
+    door = data['door']
     bedrooms = data['bedroom']
     bathrooms = data['bathroom']
     kitchen = data['kitchen']
     living = data['living']
-
-    # extrude_and_save_multipolygon(walls, inner_poly, door_poly, 27,
-    #                               f"objs/output.obj", file_type="obj")
-
-    # convert_obj_to_gltf(f"objs/output.obj",
-    #                     f"C:/Demon Home/PlanifyDraw/build/output.gltf")
+    door_poly = get_door_rect(door.centroid, inner_poly)
 
     walls = walls.buffer(-0.0001)
     bedroom_disp_mask = to_disp_mask(bedrooms)
@@ -309,5 +297,6 @@ def generate_textured_image(data, area=140):
 
     disp = np.array(pil_image)
     # save image
-    plt.imsave('outputs/output.png', disp)
+    output_name = f"./outputs/images/{output_name}.png"
+    plt.imsave(output_name, disp)
     return data

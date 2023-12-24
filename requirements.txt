@@ -10,3 +10,5 @@ scikit-image~=0.20.0
 geopandas~=0.13.2
 pillow~=9.4.0
 trimesh~=4.0.5
+mapbox_earcut
+flask~=2.2.2

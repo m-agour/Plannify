@@ -10,6 +10,8 @@ from matplotlib import pyplot as plt
 from shapely import MultiPolygon, affinity, Polygon, box
 from shapely.ops import unary_union
 
+from processing.geometry import get_door_rect
+
 materials_templates = {
     "wall": '''newmtl material_idx
 Ka 0.20000000 0.20000000 0.20000000
@@ -148,8 +150,8 @@ def extrude_and_save_multipolygon(multi_poly: MultiPolygon, floor, door,
     gpd.GeoSeries([multi_poly, door, floor]).plot()
     plt.show()
 
-    wall_texture = load_texture_image("textures/Bricks17_col.jpg")
-    floor_texture = load_texture_image("textures/wall_2.jpg")
+    wall_texture = load_texture_image("assets/textures/Bricks17_col.jpg")
+    floor_texture = load_texture_image("assets/textures/wall_2.jpg")
     if not isinstance(multi_poly, MultiPolygon):
         multi_poly = MultiPolygon([multi_poly])
 
@@ -216,3 +218,26 @@ def extrude_and_save_multipolygon(multi_poly: MultiPolygon, floor, door,
                          [[c, 'floor'] for c in cement_meshes] +
                          [[floor_mesh, 'floor'], [grass_mesh, 'grass']],
                          output_file, scale)
+
+
+def generate_3D_models(data, output_name):
+    walls = data['wall']
+    inner_poly = data['inner']
+    door = data['door']
+    # bedrooms = data['bedroom']
+    # bathrooms = data['bathroom']
+    # kitchen = data['kitchen']
+    # living = data['living']
+
+    output_name = output_name.split(".")[0]
+    obj_file_path = f"./outputs/objs/{output_name}.obj"
+    gltf_file_path = f"./outputs/gltf/{output_name}.gltf"
+
+    door_poly = get_door_rect(door.centroid, inner_poly)
+
+    extrude_and_save_multipolygon(walls, inner_poly, door_poly, 27,
+                                  output_file=obj_file_path,
+                                  file_type="obj")
+
+    convert_obj_to_gltf(obj_file_path=obj_file_path,
+                        gltf_file_path=gltf_file_path)

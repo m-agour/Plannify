@@ -1,0 +1,28 @@
+newmtl material_0
+Ka 0.20000000 0.20000000 0.20000000
+Kd 0.10000000 0.10000000 0.10000000
+Ks 0.20000000 0.20000000 0.20000000
+Ns 0.20000000
+map_Kd Bricks17_col.jpg
+map_Ns Bricks17_rgh.jpg
+map_Bump Bricks17_nrm.jpg
+newmtl material_1
+Ka 0.20000000 0.20000000 0.20000000
+Kd 0.10000000 0.10000000 0.10000000
+Ks 0.20000000 0.20000000 0.20000000
+Ns 0.20000000
+map_Kd Concrete12_col.jpg
+map_Ns Concrete12_rgh.jpg
+map_Bump Concrete12_nrm.jpg
+newmtl material_2
+Ka 0.20000000 0.20000000 0.20000000
+Kd 0.10000000 0.10000000 0.10000000
+Ks 0.20000000 0.20000000 0.20000000
+Ns 0.20000000
+map_Kd Concrete12_col.jpg
+map_Ns Concrete12_rgh.jpg
+map_Bump Concrete12_nrm.jpg
+newmtl material_3
+
+map_Kd Ground_ScrubGrassField_col.png
+map_Bump Ground_ScrubGrassField_norm.png

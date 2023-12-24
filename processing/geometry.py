@@ -3,6 +3,7 @@ import re
 import cv2
 import numpy as np
 from pandas import Series
+from shapely import box
 from shapely.geometry import Point, MultiPolygon, Polygon
 from typing import Iterable
 
@@ -137,30 +138,46 @@ def cluster_boxes(boxes):
     return new_boxes
 
 
+def get_door_rect(door_point, inner, sc=1.0):
+    width = inner.area ** 0.5 * 0.04 * sc
+    door = inner.exterior.intersection(
+        door_point.buffer(width, join_style=2)).buffer(width / 2,
+                                                       join_style=2).bounds
+    door_box = box(*door)
+    door = door_box - door_box.intersection(inner)
+    return door
+
+
 def b_area(p):
     x1, y1, x2, y2 = p.bounds
     return (x2 - x1) * (y2 - y1)
+
 
 def buffer(polygon, distance):
     return polygon.buffer(distance, cap_style=2, join_style=2)
 
 
 def buffer_up_down(polygon, distance):
-    return polygon.buffer(distance, cap_style=2, join_style=2).buffer(-distance, cap_style=2, join_style=2)
+    return polygon.buffer(distance, cap_style=2, join_style=2).buffer(
+        -distance, cap_style=2, join_style=2)
 
 
 def buffer_down_up(polygon, distance):
-    p = polygon.buffer(-distance, cap_style=2, join_style=2).buffer(distance, cap_style=2, join_style=2)
+    p = polygon.buffer(-distance, cap_style=2, join_style=2).buffer(distance,
+                                                                    cap_style=2,
+                                                                    join_style=2)
     if isinstance(p, MultiPolygon):
         p = max(p, key=lambda x: x.area)
     return p
 
 
 def buffer_up_down_up(polygon, distance):
-    return polygon.buffer(distance, cap_style=2, join_style=2).buffer(-distance * 2, cap_style=2, join_style=2).buffer(
+    return polygon.buffer(distance, cap_style=2, join_style=2).buffer(
+        -distance * 2, cap_style=2, join_style=2).buffer(
         distance, cap_style=2, join_style=2)
 
 
 def buffer_down_up_down(polygon, distance):
-    return polygon.buffer(-distance, cap_style=2, join_style=2).buffer(distance * 2, cap_style=2, join_style=2).buffer(
+    return polygon.buffer(-distance, cap_style=2, join_style=2).buffer(
+        distance * 2, cap_style=2, join_style=2).buffer(
         -distance, cap_style=2, join_style=2)

@@ -1,2 +1,4 @@
 .idea/
 *.pth
+textures (Playground)/
+__pycache__
