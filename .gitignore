@@ -4,3 +4,7 @@ textures (Playground)/
 __pycache__
 *.gltf
 *.obj
+*.gltf
+outputs/gltf/output.gltf
+outputs/images/output.png
+outputs/objs/output.obj
