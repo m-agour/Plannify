@@ -16,7 +16,7 @@ def generate_floor_plan(data, output_name):
                                                        door_poly,
                                                        no_bedrooms=3,
                                                        no_bathrooms=3,
-                                                       area=140,
+                                                       area=area,
                                                        neighbours_poly=None)
 
     bedrooms, bathrooms, kitchen = (rooms_centroids["bedroom"],
