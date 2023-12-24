@@ -1,5 +1,6 @@
 import torch
-from model.cnn_models import CentroidRegressor, XXYYRegressor
+from model.cnn_models import (CentroidRegressor, XXYYRegressor,
+                              BedBathCountsRegressor)
 
 # loading models
 
@@ -16,3 +17,10 @@ boundaries_model.load_state_dict(
     torch.load("model/models/xxyy_model_state_dict.pth")
 )
 boundaries_model.eval()
+
+# count regressor model
+rooms_counts_model = BedBathCountsRegressor()
+rooms_counts_model.load_state_dict(
+    torch.load("model/models/rooms_count_model.pth",
+               map_location=torch.device('cpu'))
+)

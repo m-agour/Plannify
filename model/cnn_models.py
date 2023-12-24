@@ -261,3 +261,56 @@ class XXYYRegressor(torch.nn.Module):
         # print the example output and label
         print(f"Example Output: {self.example_output * 256}")
         print(f"Example Label: {self.example_label * 256}")
+
+
+class BedBathCountsRegressor(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+
+        self.model = models.resnet34(num_classes=2)
+        self.model.conv1 = nn.Conv2d(2, 64,
+                                     kernel_size=(7, 7), stride=(2, 2),
+                                     padding=(3, 3), bias=False)
+        self.loss_func = nn.MSELoss()
+
+    def forward(self, x):
+        x = self.model(x)
+        return x
+
+    def configure_optimizers(self):
+        optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
+        sch = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10,
+                                              gamma=0.5)
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": {
+                "scheduler": sch,
+                "monitor": "train_loss",
+            }
+        }
+
+    def training_step(self, batch, batch_idx):
+        inputs_1, labels = batch
+        outputs = self(inputs_1)
+        loss = self.loss_func(outputs, labels)
+        self.log("train_loss", loss, on_epoch=True)
+        return loss
+
+    def validation_step(self, batch, batch_idx):
+        inputs_1, labels = batch
+        outputs = self(inputs_1)
+        loss = self.loss_func(outputs, labels)
+        self.log("val_loss", loss, on_epoch=True)
+        return loss
+
+    def on_train_epoch_end(self):
+        print(f"Epoch: {self.current_epoch}")
+        print(f"Train Loss: {self.trainer.callback_metrics['train_loss']}")
+        print(f"Validation Loss: {self.trainer.callback_metrics['val_loss']}")
+
+        plt.imshow(self.example_input_1.detach().cpu().permute((1, 2, 0))[:, :,
+                   [0, 1, 1]])
+        plt.show()
+
+        print("label: ", self.example_label)
+        print("output: ", self.example_output)
