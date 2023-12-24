@@ -2,3 +2,5 @@
 *.pth
 textures (Playground)/
 __pycache__
+*.gltf
+*.obj
