@@ -36,6 +36,6 @@ def generate_floor_plan(data, output_name):
                                                     bedrooms, bathrooms,
                                                     kitchen)
 
-    generate_textured_image(rooms_polygons, area=140, output_name=output_name)
+    generate_textured_image(rooms_polygons, area=area, output_name=output_name)
 
     generate_3D_models(rooms_polygons, output_name=output_name)

@@ -267,7 +267,7 @@ class BedBathCountsRegressor(torch.nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.model = models.resnet34(num_classes=2)
+        self.model = models.resnet18(num_classes=2)
         self.model.conv1 = nn.Conv2d(2, 64,
                                      kernel_size=(7, 7), stride=(2, 2),
                                      padding=(3, 3), bias=False)

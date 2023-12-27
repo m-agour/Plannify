@@ -320,17 +320,19 @@ def process_input_boundaries_model(model, inner_poly, door_poly, bedrooms,
 def get_rooms_counts(model, inner_poly, door_pos, area):
     x = np.zeros((1, 256, 256, 2))
 
+    area = max(min(250, area), 60)
     area_s = (area - 60) / 250
 
-    area_s /= 0.8
+    area_s *= 0.8
 
     inner_poly = affinity.scale(inner_poly, xfact=area_s, yfact=area_s,
                                 origin=(256 / 2, 256 / 2))
-    door_pos = affinity.scale(door_pos.buffer(1), xfact=area_s, yfact=area_s,
+    door_pos = affinity.scale(door_pos.buffer(0.001), xfact=area_s,
+                              yfact=area_s,
                               origin=(256 / 2, 256 / 2)).centroid
 
-    x[0, :, :, 0] = get_mask(get_mask(inner_poly), (256, 256), point_s=5) > 0
-    x[0, :, :, 1] = get_mask(get_mask(door_pos), (256, 256), point_s=5) > 0
+    x[0, :, :, 0] = get_mask(door_pos, (256, 256), point_s=5) > 0
+    x[0, :, :, 1] = get_mask(inner_poly, (256, 256), point_s=5) > 0
 
     x = torch.from_numpy(x).permute((0, 3, 1, 2)).float()
 
