@@ -298,5 +298,6 @@ def generate_textured_image(data, output_name, area=140):
     disp = np.array(pil_image)
     # save image
     output_name = f"./outputs/images/{output_name}.png"
+    return
     plt.imsave(output_name, disp)
     return data

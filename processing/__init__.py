@@ -17,7 +17,7 @@ def generate_floor_plan(data, output_name):
                                              inner_poly,
                                              door_poly.centroid,
                                              area)
-
+    bed_count, bath_count = min(bed_count, 3), min(bath_count, 2)
     rooms_centroids = process_centroid_generator_model(regressor_model,
                                                        inner_poly,
                                                        door_poly,
